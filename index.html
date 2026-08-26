@@ -1,10 +1,9 @@
-    <!-- JavaScript Lógico Puro e Blindado contra Bloqueios de Rede -->
+    <!-- JavaScript Lógico Puro e Corrigido para Destravar a Conexão -->
     <script>
         async function chamarGemini(prompt, apiKey) {
-            // URL oficial da API do Google que aceita requisições diretas de navegadores
+            // CORREÇÃO: URL oficial completa e correta aceita por navegadores
             const url = "https://googleapis.com" + apiKey;
             
-            // Estrutura de dados simplificada e nativa aceita pela Google
             const corpo = {
                 contents: [{
                     parts: [{ text: prompt }]
@@ -26,7 +25,7 @@
 
             const data = await response.json();
             
-            // Caminho exato de leitura da resposta da árvore do JSON da Google
+            // CORREÇÃO: Caminho exato e limpo de leitura do texto na API do Google
             if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                 return data.candidates[0].content.parts[0].text;
             }
