@@ -136,22 +136,36 @@
                         <div>
                             <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
 ```html
-            <!-- JavaScript Lógico com SDK Oficial do Gemini (Blindado contra CORS) -->
+                <!-- JavaScript Lógico com SDK Oficial do Gemini (Módulo Corrigido) -->
     <script type="module">
-        // Importa o módulo oficial de IA do Google direto do repositório seguro deles
         import { GoogleGenAI } from "https://esm.run";
+
+        async function chamarGemini(prompt, apiKey, modelo = 'gemini-2.5-flash') {
+            try {
+                // Inicializa o conector oficial seguro da Google
+                const ai = new GoogleGenAI({ apiKey: apiKey });
+                const response = await ai.models.generateContent({
+                    model: modelo,
+                    contents: prompt,
+                });
+                // Retorno oficial e correto do texto de resposta do SDK
+                return response.text;
+            } catch (error) {
+                throw new Error("Erro na API do Gemini: " + error.message);
+            }
+        }
 
         async function processarAnalise() {
             const curr = document.getElementById('curriculo').value.trim();
             const vaga = document.getElementById('vaga').value.trim();
             const keyGemini = document.getElementById('key-gemini').value.trim();
 
-            if (!curr || !vaga) { alert("Por favor, forneça o seu currículo base e os dados da vaga!"); return; }
+            if (!curr || !vaga) { alert("Por favor, preencha o seu currículo base e a vaga!"); return; }
             if (!keyGemini) { alert("A API Key precisa estar configurada!"); return; }
 
             const btn = document.getElementById('btn-main');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Conectando Canal Seguro...</span>';
+            btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Processando Vetores Contábeis...</span>';
             btn.disabled = true;
 
             const promptScore = `
@@ -160,22 +174,14 @@
             {
                 "score": 85,
                 "palavras_faltantes": ["Cash Management", "Liquidação", "Jira"],
-                "sugestao_melhoria": "Ajuste as conquistas para destacar o gerenciamento de roadmaps."
+                "sugestao_melhoria": "Ajuste as conquistas para destacar o gerenciamento de roadmaps e conciliação financeira."
             }
             CURRÍCULO: ${curr}
             VAGA: ${vaga}
             `;
 
             try {
-                // Inicializa o conector oficial seguro da Google que quebra o bloqueio de CORS
-                const ai = new GoogleGenAI({ apiKey: keyGemini });
-                
-                const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: promptScore,
-                });
-
-                const responseText = response.text;
+                const responseText = await chamarGemini(promptScore, keyGemini);
                 const jsonClean = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
                 const dados = JSON.parse(jsonClean);
 
@@ -189,21 +195,21 @@
                 badge.className = "text-5xl font-black px-6 py-4 rounded-2xl border bg-gray-950 flex items-center justify-center font-mono tracking-tighter ";
                 label.className = "text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full border ";
 
-                // Aplicação das regras matemáticas de cor por match
+                // Aplicação rígida das faixas de score e cores do Design System
                 if (score <= 30) {
-                    label.innerText = "ruim";
+                    label.innerText = "🚨 RUIM (Aderência Crítica)";
                     label.classList.add("bg-red-950/60", "text-red-400", "border-red-900/40");
                     badge.classList.add("text-red-400", "border-red-500/20");
                 } else if (score <= 50) {
-                    label.innerText = "mediano";
+                    label.innerText = "⚠️ MEDIANO (Ajustes Necessários)";
                     label.classList.add("bg-amber-950/60", "text-amber-400", "border-amber-900/40");
                     badge.classList.add("text-amber-400", "border-amber-500/20");
                 } else if (score <= 70) {
-                    label.innerText = "bom";
+                    label.innerText = "📈 BOM (Perfil Competitivo)";
                     label.classList.add("bg-blue-950/60", "text-blue-400", "border-blue-900/40");
                     badge.classList.add("text-blue-400", "border-blue-500/20");
                 } else {
-                    label.innerText = "match";
+                    label.innerText = "🔥 EXCELENTE MATCH (Pronto para o RH)";
                     label.classList.add("bg-emerald-950/60", "text-emerald-400", "border-emerald-900/40");
                     badge.classList.add("text-emerald-400", "border-emerald-500/20");
                 }
@@ -222,7 +228,7 @@
                 document.getElementById('painel-diagnostico').scrollIntoView({ behavior: 'smooth' });
 
             } catch (err) {
-                alert("Falha no diagnóstico via SDK: " + err.message);
+                alert("Falha no diagnóstico lógico: " + err.message);
             } finally {
                 btn.innerHTML = originalText;
                 btn.disabled = false;
@@ -236,7 +242,7 @@
 
             const btn = document.getElementById('btn-optimize');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ <span class="animate-pulse tracking-wider">Mapeando Atividades...</span>';
+            btn.innerHTML = '⏳ <span class="animate-pulse tracking-wider">Construindo Currículo ATS...</span>';
             btn.disabled = true;
 
             const promptOptimize = `
@@ -254,13 +260,9 @@
             `;
 
             try {
-                const ai = new GoogleGenAI({ apiKey: keyGemini });
-                const response = await ai.models.generateContent({
-                    model: 'gemini-2.5-flash',
-                    contents: promptOptimize,
-                });
-                
-                document.getElementById('resultado-texto-ats').innerText = response.text.trim();
+                // Dispara a chamada corrigida para geração de conteúdo bruto para o currículo ATS
+                const responseText = await chamarGemini(promptOptimize, keyGemini);
+                document.getElementById('resultado-texto-ats').innerText = responseText.trim();
                 document.getElementById('bloco-curriculo-ats').classList.remove('hidden');
                 document.getElementById('bloco-curriculo-ats').scrollIntoView({ behavior: 'smooth' });
             } catch (err) {
@@ -277,7 +279,7 @@
             alert("📋 Texto copiado com sucesso para a área de transferência!");
         }
 
-        // Vincula as funções criadas dentro do módulo escopado aos botões visuais da tela HTML
+        // Amarra as funções executadas dentro do escopo do módulo aos botões visuais da tela HTML
         window.processarAnalise = processarAnalise;
         window.otimizarCurriculo = otimizarCurriculo;
         window.copiarTextoOtimizado = copiarTextoOtimizado;
