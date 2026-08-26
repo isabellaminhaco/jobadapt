@@ -136,9 +136,10 @@
                         <div>
                             <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
 ```html
-    <!-- JavaScript Lógico / Integrações de Promises Otimizadas -->
+        <!-- JavaScript Lógico / Integrações de Promises Otimizadas e Calibradas -->
     <script>
         async function chamarGemini(prompt, apiKey) {
+            // Atualizado para o motor gemini-3.6-flash robusto contra textos longos
             const url = `https://googleapis.com{apiKey}`;
             const response = await fetch(url, {
                 method: "POST",
@@ -150,7 +151,7 @@
                 throw new Error(errData.error?.message || "Falha na comunicação com o servidor.");
             }
             const data = await response.json();
-            return data.candidates.content.parts.text;
+            return data.candidates[0].content.parts[0].text;
         }
 
         async function processarAnalise() {
@@ -163,19 +164,19 @@
 
             const btn = document.getElementById('btn-main');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Processando Vetores...</span>';
+            btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Calculando Vetores de Produto...</span>';
             btn.disabled = true;
 
             const promptScore = `
             Você é um Recrutador Sênior especialista em softwares de RH (ATS). Analise a aderência entre o currículo e a vaga informados.
-            Você DEVE retornar UNICAMENTE um objeto JSON válido estruturado exatamente no modelo abaixo, sem markdown (sem \`\`\`json ou \`\`\`), sem textos explicativos fora do objeto:
+            Retorne UNICAMENTE um objeto JSON válido estruturado exatamente no modelo abaixo, sem markdown (sem \`\`\`json ou \`\`\`), sem textos explicativos fora do objeto:
             {
                 "score": 85,
                 "palavras_faltantes": ["Cash Management", "Liquidação", "Jira"],
-                "sugestao_melhoria": "Ajuste as conquistas para destacar o gerenciamento de roadmaps."
+                "sugestao_melhoria": "Destaque o gerenciamento de roadmaps contábeis."
             }
-            CURRÍCULO: \${curr}
-            VAGA: \${vaga}
+            CURRÍCULO: ${curr}
+            VAGA: ${vaga}
             `;
 
             try {
@@ -217,7 +218,7 @@
                     tagsContainer.innerHTML = '<span class="text-xs text-emerald-400 bg-emerald-950/30 border border-emerald-900/20 px-2 py-1 rounded-lg">Perfil 100% alinhado!</span>';
                 } else {
                     dados.palavras_faltantes.forEach(tag => {
-                        tagsContainer.innerHTML += `<span class="text-xs text-red-400 bg-red-950/20 border border-red-900/30 px-2.5 py-1 rounded-lg font-medium">\${tag}</span>`;
+                        tagsContainer.innerHTML += `<span class="text-xs text-red-400 bg-red-950/20 border border-red-900/30 px-2.5 py-1 rounded-lg font-medium">${tag}</span>`;
                     });
                 }
 
@@ -246,14 +247,14 @@
             Você é um Recrutador Sênior especialista em softwares de recrutamento (ATS). Reescreva o currículo fornecido abaixo adaptando-o para as exigências da vaga.
             
             DIRETRIZES OBRIGATÓRIAS DE CONTEÚDO (MANDATÓRIAS):
-            1. Você DEVE manter TODAS as empresas, períodos de trabalho e métricas detalhadas originais (como os R$ 2 bilhões, redução de SLA de 20 para 7 dias, 5 clientes piloto, etc.). Proibido resumir ou truncar o histórico.
+            1. Você DEVE manter TODAS as empresas, períodos de trabalho e métricas detalhadas originais. Proibido resumir ou truncar o histórico.
             2. Estrutura 100% vertical e limpa: Nome da Empresa, Cargo e Período dispostos em linhas distintas.
             3. Responsabilidades descritas em tópicos curtos (bullet points), iniciando estritamente com um hífen simples e um espaço (exemplo: "- Liderou o redesenho contábil...").
             4. Não use caracteres especiais como asteriscos (*), barras decorativas ou linhas extensas de hífens.
             5. Retorne EXCLUSIVAMENTE o texto puro do currículo otimizado de ponta a ponta, sem saudações ou explicações textuais adicionais fora do documento.
             
-            CURRÍCULO BASE: \${curr}
-            VAGA ALVO: \${vaga}
+            CURRÍCULO BASE: ${curr}
+            VAGA ALVO: ${vaga}
             `;
 
             try {
