@@ -6,7 +6,9 @@
     <title>DashJobs.ai | Dashboard ATS & Matcher</title>
     <!-- Tailwind CSS Oficial para o Design System -->
     <script src="https://tailwindcss.com"></script>
-    <!-- Google Fonts: Inter para melhor legibilidade técnica -->
+    <!-- Biblioteca Oficial para Gerar e Baixar PDF direto no Desktop -->
+    <script src="https://cloudflare.com"></script>
+    <!-- Google Fonts: Inter para legibilidade técnica -->
     <link rel="preconnect" href="https://googleapis.com">
     <link rel="preconnect" href="https://gstatic.com" crossorigin>
     <link href="https://googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -106,7 +108,7 @@
                             <h3 class="text-base font-bold text-emerald-400 flex items-center gap-2">
                                 ✨ Versão Final Otimizada (Padrão ATS)
                             </h3>
-                            <p class="text-xs text-slate-400 mt-0.5">Texto reestruturado verticalmente pronto para envio.</p>
+                            <p class="text-xs text-slate-400 mt-0.5">Texto reestruturado pronto. Baixe o PDF no painel lateral ou copie.</p>
                         </div>
                         <button onclick="copiarTextoOtimizado()" class="bg-slate-950 hover:bg-slate-800 text-slate-300 text-xs font-semibold py-2 px-4 rounded-lg border border-slate-800 transition active:scale-[0.98]">
                             📋 Copiar Texto Completo
@@ -127,11 +129,8 @@
                     <!-- Badge Central de Pontuação -->
                     <div class="text-center py-5 border-b border-slate-800/60 bg-slate-950/40 rounded-xl border border-slate-800/40 p-4">
                         <div class="inline-block relative">
-                            <span id="score-badge" class="text-5xl font-black px-6 py-4 rounded-2xl border bg-gray-950 flex items-center justify-center font-mono tracking-tighter">
-                                <span id="num-score">0</span>%
-                            </span>
-```html
-    <!-- JavaScript Lógico Puro e Corrigido para Destravar os Botões -->
+                            ```html
+    <!-- JavaScript Lógico Corrigido sem Erros de Sintaxe -->
     <script>
         async function chamarGemini(prompt, apiKey) {
             const url = `https://googleapis.com{apiKey}`;
@@ -146,12 +145,11 @@
 
             if (!response.ok) {
                 const errData = await response.json();
-                throw new Error(errData.error?.message || "Falha na comunicação com o servidor da Google.");
+                throw new Error(errData.error?.message || "Falha na comunicação com o servidor.");
             }
 
             const data = await response.json();
             
-            // CORREÇÃO CRÍTICA DO CAMINHO DO JSON: Mapeamento oficial estável da estrutura de API de texto do Gemini
             if (data.candidates && data.candidates[0] && data.candidates[0].content && data.candidates[0].content.parts && data.candidates[0].content.parts[0]) {
                 return data.candidates[0].content.parts[0].text;
             }
@@ -171,17 +169,8 @@
             btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Analisando Vetores...</span>';
             btn.disabled = true;
 
-            const promptScore = `
-            Você é um Recrutador Sênior especialista em softwares de RH (ATS). Analise a aderência entre o currículo e a vaga informados.
-            Você DEVE retornar UNICAMENTE um objeto JSON válido estruturado exatamente no modelo abaixo, sem markdown (sem \`\`\`json ou \`\`\`), sem textos explicativos fora do objeto:
-            {
-                "score": 85,
-                "palavras_faltantes": ["Cash Management", "Liquidação", "Jira"],
-                "sugestao_melhoria": "Ajuste as conquistas para destacar o gerenciamento de roadmaps e conciliação financeira."
-            }
-            CURRÍCULO: ${curr}
-            VAGA: ${vaga}
-            `;
+            // Prompt estruturado sem interpolações problemáticas de variáveis
+            const promptScore = "Você é um Recrutador Sênior especialista em softwares de RH (ATS). Analise a aderência entre o currículo e a vaga informados. Você DEVE retornar UNICAMENTE um objeto JSON válido estruturado exatamente no modelo abaixo, sem markdown (sem ```json ou ```), sem textos explicativos fora do objeto:\n{\n\"score\": 85,\n\"palavras_faltantes\": [\"Cash Management\", \"Liquidação\", \"Jira\"],\n\"sugestao_melhoria\": \"Ajuste as conquistas para destacar o gerenciamento de roadmaps.\"\n}\n\nCURRÍCULO:\n" + curr + "\n\nVAGA:\n" + vaga;
 
             try {
                 const responseText = await chamarGemini(promptScore, keyGemini);
@@ -198,7 +187,6 @@
                 badge.className = "text-5xl font-black px-6 py-4 rounded-2xl border bg-gray-950 flex items-center justify-center font-mono tracking-tighter ";
                 label.className = "text-[10px] font-extrabold uppercase tracking-widest px-3 py-1 rounded-full border ";
 
-                // Aplicação matemática rígida das labels de status de match por cores
                 if (score <= 30) {
                     label.innerText = "🚨 RUIM (Aderência Crítica)";
                     label.classList.add("bg-red-950/60", "text-red-400", "border-red-900/40");
@@ -251,25 +239,14 @@
             btn.innerHTML = '⏳ <span class="animate-pulse tracking-wider">Construindo Currículo ATS...</span>';
             btn.disabled = true;
 
-            const promptOptimize = `
-            Você é um Recrutador Sênior especialista em softwares de recrutamento (ATS). Reescreva o currículo fornecido abaixo adaptando-o para as exigências da vaga.
-            
-            DIRETRIZES OBRIGATÓRIAS DE CONTEÚDO (MANDATÓRIAS):
-            1. Você DEVE manter TODAS as empresas, períodos de trabalho e métricas detalhadas originais (como os R$ 2 bilhões, redução de SLA de 20 para 7 dias, 5 clientes piloto, etc.). Proibido resumir ou truncar o histórico.
-            2. Estrutura 100% vertical e limpa: Nome da Empresa, Cargo e Período dispostos em linhas distintas.
-            3. Responsabilidades descritas em tópicos curtos (bullet points), iniciando estritamente com um hífen simples e um espaço (exemplo: "- Liderou o redesenho contábil...").
-            4. Não use caracteres especiais como asteriscos (*), barras decorativas ou linhas extensas de hífens.
-            5. Retorne EXCLUSIVAMENTE o texto puro do currículo otimizado de ponta a ponta, sem saudações ou explicações textuais adicionais fora do documento.
-            
-            CURRÍCULO BASE: ${curr}
-            VAGA ALVO: ${vaga}
-            `;
+            const promptOptimize = "Você é um Recrutador Sênior especialista em softwares de recrutamento (ATS). Reescreva o currículo fornecido abaixo adaptando-o para as exigências da vaga. DIRETRIZES OBRIGATÓRIAS DE CONTEÚDO (MANDATÓRIAS):\n1. Você DEVE manter TODAS as empresas, períodos de trabalho e métricas detalhadas originais (como os R$ 2 bilhões, redução de SLA de 20 para 7 dias, 5 clientes piloto, etc.). Proibido resumir ou truncar o histórico.\n2. Estrutura 100% vertical e limpa: Nome da Empresa, Cargo e Período dispostos em linhas distintas.\n3. Responsabilidades descritas em tópicos curtos (bullet points), iniciando estritamente com um hífen simples e um espaço (exemplo: \"- Liderou o redesenho contábil...\").\n4. Não use caracteres especiais como asteriscos (*), barras decorativas ou linhas extensas de hífens.\n5. Retorne EXCLUSIVAMENTE o texto puro do currículo otimizado de ponta a ponta, sem saudações ou explicações textuais adicionais fora do documento.\n\nCURRÍCULO BASE:\n" + curr + "\n\nVAGA ALVO:\n" + vaga;
 
             try {
                 const responseText = await chamarGemini(promptOptimize, keyGemini);
                 document.getElementById('resultado-texto-ats').innerText = responseText.trim();
                 document.getElementById('bloco-curriculo-ats').classList.remove('hidden');
-                document.getElementById('bloco-curriculo-ats').scrollIntoView({ behavior: 'smooth' });
+                document.getElementById('bloco-btn-pdf').classList.remove('hidden');
+                 document.getElementById('bloco-curriculo-ats').scrollIntoView({ behavior: 'smooth' });
             } catch (err) {
                 alert("Erro ao reestruturar dados: " + err.message);
             } finally {
@@ -279,3 +256,53 @@
         }
 
         function copiarTextoOtimizado() {
+            const txt = document.getElementById('resultado-texto-ats').innerText;
+            navigator.clipboard.writeText(txt);
+            alert("📋 Texto copiado com sucesso para a área de transferência!");
+        }
+
+        function baixarCurriculoPDF() {
+            const { jsPDF } = window.jspdf;
+            const doc = new jsPDF({ orientation: "p", unit: "mm", format: "a4" });
+            const txt = document.getElementById('resultado-texto-ats').innerText;
+            
+            doc.setFont("Helvetica", "normal");
+            doc.setFontSize(10);
+            
+            // Margens de engenharia rigorosas padrão ATS
+            const xMargem = 15;
+            let yPos = 15;
+            const larguraMax = 180;
+            const alturaMaxJanela = 270; // Margem de segurança inferior
+
+            const linhas = txt.split("\n");
+            
+            linhas.forEach(linha => {
+                const linhaLimpa = linha.trim();
+                
+                // Trata linhas vazias como respiros no documento
+                if (!linhaLimpa) {
+                    yPos += 3;
+                    return;
+                }
+
+                // Divide textos longos para não cortarem na lateral da folha
+                const linhasDivididas = doc.splitTextToSize(linhaLimpa, larguraMax);
+                
+                linhasDivididas.forEach(l => {
+                    // Valida se atingiu o fim da folha para criar uma nova página limpa
+                    if (yPos > alturaMaxJanela) {
+                        doc.addPage();
+                        yPos = 15;
+                    }
+                    doc.text(l, xMargem, yPos);
+                    yPos += 5.5; // Espaçamento entre linhas
+                });
+            });
+
+            // Faz o download físico instantâneo e direto no seu Desktop/Downloads
+            doc.save("Curriculo_Isabella_Otimizado_ATS.pdf");
+        }
+    </script>
+</body>
+</html>
