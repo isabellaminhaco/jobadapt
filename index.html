@@ -136,9 +136,10 @@
                         <div>
                             <h4 class="text-[11px] font-bold text-slate-400 uppercase tracking-wide flex items-center gap-1.5">
     <!-- JavaScript Lógico / Integrações de Promises Otimizadas -->
+        <!-- JavaScript Lógico / Integrações de Promises Otimizadas -->
     <script>
         async function chamarGemini(prompt, apiKey) {
-            // URL oficial, completa e estável da API do Google Gemini
+            // URL oficial e estável da API do Google Gemini
             const url = `https://googleapis.com{apiKey}`;
             const response = await fetch(url, {
                 method: "POST",
@@ -150,7 +151,6 @@
                 throw new Error(errData.error?.message || "Falha na comunicação com o servidor.");
             }
             const data = await response.json();
-            // Forma correta e moderna de ler a resposta de texto da IA
             return data.candidates[0].content.parts[0].text;
         }
 
@@ -164,7 +164,7 @@
 
             const btn = document.getElementById('btn-main');
             const originalText = btn.innerHTML;
-            btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Processando Vetores Contábeis...</span>';
+            btn.innerHTML = '⏳ <span class="animate-pulse tracking-widest text-[11px]">Processando Vetores...</span>';
             btn.disabled = true;
 
             const promptScore = `
@@ -173,7 +173,7 @@
             {
                 "score": 85,
                 "palavras_faltantes": ["Cash Management", "Liquidação", "Jira"],
-                "sugestao_melhoria": "Ajuste as conquistas para destacar o gerenciamento de roadmaps e conciliação financeira."
+                "sugestao_melhoria": "Ajuste as conquistas para destacar o gerenciamento de roadmaps."
             }
             CURRÍCULO: ${curr}
             VAGA: ${vaga}
@@ -181,6 +181,7 @@
 
             try {
                 const responseText = await chamarGemini(promptScore, keyGemini);
+                // CORREÇÃO: Limpeza segura de blocos de markdown se a IA responder com eles
                 const jsonClean = responseText.replace(/```json/g, "").replace(/```/g, "").trim();
                 const dados = JSON.parse(jsonClean);
 
